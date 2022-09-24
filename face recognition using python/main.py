@@ -4,11 +4,11 @@ import cv2
 
 video_capture = cv2.VideoCapture(0)
 
-shivank_image = fr.load_image_file("nakshtra.jpeg")
-shivank_face_encoding  = fr.face_encodings(shivank_image)[0]
+modi_image = fr.load_image_file("narendra.jpeg")
+modi_face_encoding  = fr.face_encodings(narendra_image)[0]
 
-known_face_encondings = [shivank_face_encoding]
-known_face_names = ["nakshatra "]
+known_face_encondings = [modi_face_encoding]
+known_face_names = ["narendra modi "]
 
 
 
