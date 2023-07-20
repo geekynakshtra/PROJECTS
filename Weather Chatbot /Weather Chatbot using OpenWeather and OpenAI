@@ -1,0 +1,69 @@
+import requests
+import json
+import openai
+
+# OpenWeather API Configuration
+API_KEY = 'YOUR_OPENWEATHER_API_KEY'
+
+# OpenAI API Configuration
+OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY'
+OPENAI_CHATBOT_NAME = 'text-davinci-003'
+
+# Function to fetch weather data from OpenWeather API
+def get_weather_data(city_name):
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = json.loads(response.text)
+        return data
+    else:
+        return None
+
+# Function to generate a response using OpenAI API
+def generate_openai_response(message):
+    response = openai.Completion.create(
+        engine=OPENAI_CHATBOT_NAME,
+        prompt=message,
+        max_tokens=50,
+        n=1,
+        stop=None,
+        temperature=0.7
+    )
+    return response.choices[0].text.strip()
+
+# Function to handle user input and generate appropriate responses
+def handle_user_input(user_input):
+    if 'weather' in user_input.lower():
+        city_name= user_input.split('weather')[1].strip()
+        weather_data = get_weather_data(city_name)
+        if weather_data:
+            weather_description = weather_data['weather'][0]['description']
+            temperature = weather_data['main']['temp']
+            temperature = round(temperature - 273.15, 2)  # Convert from Kelvin to Celsius
+            response = f"The weather in {city_name} is {weather_description}. The temperature is {temperature}°C."
+        else:
+            response = "Sorry, I couldn't fetch the weather information. Please try again later."
+    else:
+        response = generate_openai_response(user_input)
+    return response
+
+# Main function to run the chatbot
+def run_chatbot():
+    print("Welcome to the Weather Chatbot!")
+    print("Ask me about the weather or anything else you'd like to know.")
+
+    while True:
+        user_input = input("You:")
+        if user_input.lower() == 'exit':
+            break
+        else:
+            response = handle_user_input(user_input)
+            print("Chatbot:", response)
+
+if __name__ == '__main__':
+    # Set up OpenAI API
+    openai.api_key = OPENAI_API_KEY
+
+    # Run the chatbot
+    run_chatbot()
+
